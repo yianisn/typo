@@ -150,6 +150,7 @@
   </div>
 <!-- Merge article section -->
   <% unless @article.id.nil? %>
+  <% if current_user.profile_id == 1 %>
   <div class=''>
     <h4><%= _("Merge Articles") %></h4>
       <label for="article_other_article_id"><%= _("Article ID") %>
@@ -158,6 +159,7 @@
       <br/>
       <input id='merge' type="submit" value="<%= _('Merge') %>" name="merge"/>
   </div>
+  <% end %>
   <% end %>
 
   </div>
