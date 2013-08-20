@@ -9,7 +9,7 @@ Given /^the blog has the following users:$/ do |fields|
   end
 end
 
-Given /^the user "(.*)" is logged into the admin panel$/ do |login_name|
+Given /^I have logged in in the admin panel as user "(.*)"$/ do |login_name|
   user = User.where(login: login_name).first
 
   visit '/accounts/login'
@@ -25,7 +25,14 @@ Given /^the user "(.*)" is logged into the admin panel$/ do |login_name|
 
 end
 
+Given /^the following articles exist:$/ do |fields|
+  user = User.where(login: 'non_admin').first
+  fields.rows.each do |user, title, body|
+    User.where(login: user).first.articles.create!(:title => title,
+                                                   :body => body)
+  end
+end
 
-Given /^I edit article (\d+)$/ do |article_id|
-  visit '/admin/content/edit/' + article_id
+Given /^I edit article "(.*)"$/ do |article_title|
+  visit '/admin/content/edit/' + Article.where(title: article_title).first.id.to_s
 end
