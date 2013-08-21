@@ -1,0 +1,21 @@
+
+<%= form_tag({ :action => "merge", :id => @article.id}, :id => "merge_form", :enctype => "multipart/form-data") do %>
+
+<!-- Merge article section -->
+  <% unless @article.id.nil? %>
+  <% if current_user.profile_id == 1 %>
+  <div class=''>
+    <h4><%= _("Merge Articles") %></h4>
+      <label for="article_other_article_id"><%= _("Article ID") %>
+        <%= text_field 'article', 'other_article_id', :name => 'merge_with' %>
+      </label>
+      <br/>
+
+    <%= save( _("Merge")) %>
+  </div>
+  <% end %>
+  <% end %>
+
+
+<% end %>
+
