@@ -152,12 +152,12 @@ class Admin::ContentController < Admin::BaseController
 
     @post_types = PostType.find(:all)
     if request.post?
-      if params[:article][:draft]
-        get_fresh_or_existing_draft_for_article
-      elsif params[:merge]
+      if params[:merge]
         @article.merge_with(params[:merge_with])
         redirect_to :action => 'index'
         return
+      elsif params[:article][:draft]
+        get_fresh_or_existing_draft_for_article
       else
         if not @article.parent_id.nil?
           @article = Article.find(@article.parent_id)
