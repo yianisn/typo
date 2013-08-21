@@ -60,7 +60,7 @@ class Article < Content
   scope :published_at, lambda {|time_params| { :conditions => { :published => true, :published_at => Article.time_delta(*time_params) }, :order => 'published_at DESC' } }
 
   setting :password,                   :string, ''
-  #value of the article to merge with
+  #value of the article to mergewith
   setting :other_article_id,                   :string, ''
 
   def initialize(*args)
@@ -426,9 +426,10 @@ class Article < Content
       comment.article_id = self.id
       comment.save!
     end
-
+    save!
     reload
     other_article.reload
+    other_article.destroy
   end
 
 
