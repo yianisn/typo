@@ -184,25 +184,25 @@ describe Article do
   ### XXX: Should we have a test here?
   it "test_send_multiple_pings" do
   end
-  
+
   describe "Testing redirects" do
     it "a new published article gets a redirect" do
       a = Article.create(:title => "Some title", :body => "some text", :published => true)
       a.redirects.first.should_not be_nil
       a.redirects.first.to_path.should == a.permalink_url
     end
-    
-    it "a new unpublished article should not get a redirect" do 
+
+    it "a new unpublished article should not get a redirect" do
       a = Article.create(:title => "Some title", :body => "some text", :published => false)
       a.redirects.first.should be_nil
     end
-    
+
     it "Changin a published article permalink url should only change the to redirection" do
       a = Article.create(:title => "Some title", :body => "some text", :published => true)
       a.redirects.first.should_not be_nil
       a.redirects.first.to_path.should == a.permalink_url
       r  = a.redirects.first.from_path
-      
+
       a.permalink = "some-new-permalink"
       a.save
       a.redirects.first.should_not be_nil
@@ -571,7 +571,7 @@ describe Article do
     describe "#find_by_permalink" do
       it "uses UTC to determine correct day" do
         @a.save
-        a = Article.find_by_permalink :year => 2011, :month => 2, :day => 21, :permalink => 'a-big-article' 
+        a = Article.find_by_permalink :year => 2011, :month => 2, :day => 21, :permalink => 'a-big-article'
         a.should == @a
       end
     end
@@ -592,7 +592,7 @@ describe Article do
     describe "#find_by_permalink" do
       it "uses UTC to determine correct day" do
         @a.save
-        a = Article.find_by_permalink :year => 2011, :month => 2, :day => 22, :permalink => 'a-big-article' 
+        a = Article.find_by_permalink :year => 2011, :month => 2, :day => 22, :permalink => 'a-big-article'
         a.should == @a
       end
     end
@@ -628,7 +628,50 @@ describe Article do
         article.should be == already_exist_article
       end
     end
-
   end
+
+  describe "when merging two articles the 'first' article" do
+    it "should have the title of the first article" do
+      a = stub_model(Article, :id => 123, :title => 'first title', :body => 'first body')
+      a.stub(:reload)
+      b = stub_model(Article, :id => 321, :title => 'second title', :body => 'first body')
+      b.stub(:reload)
+      Article.should_receive(:where).and_return([b])
+      a.merge_with(321)
+      assert_equal 'first title', a.title
+    end
+
+    it "should have the content of both articles" do
+      a = stub_model(Article, :id => 123, :title => 'first title', :body => 'first body')
+      a.stub(:reload)
+      b = stub_model(Article, :id => 321, :title => 'second title', :body => 'second body')
+      b.stub(:reload)
+      Article.should_receive(:where).and_return([b])
+
+      a.merge_with(321)
+      assert_equal "first body\nsecond body", a.body
+    end
+
+    it "should have the comments of both articles" do
+      a_comments = [stub_model(Comment, :article_id => 123, :author => 'a', :body => 'aa'), stub_model(Comment, :article_id => 123, :author => 'a', :body => 'aa')]
+      a_comments.stub(:comments_closed?)
+      a = stub_model(Article, :id => 123, :title => 'first title', :body => 'first body', :comments => a_comments)
+      a.stub(:reload)
+
+      b_comments = [stub_model(Comment, :article_id => 321, :author => 'a', :body => 'aa'), stub_model(Comment, :article_id => 321, :author => 'a', :body => 'aa'), stub_model(Comment, :article_id => 321, :author => 'a', :body => 'aa')]
+      b = stub_model(Article, :id => 321, :title => 'second title', :body => 'second body', :comments => a_comments)
+      b.should_receive(:destroy)
+      b.stub(:reload)
+      Article.should_receive(:where).and_return([b])
+
+      a.merge_with(321)
+
+    end
+  end
+
+  describe "when merging two articles the 'second' article" do
+    it "should be removed"
+  end
+
 end
 
