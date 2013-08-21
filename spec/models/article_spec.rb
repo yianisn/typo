@@ -634,8 +634,10 @@ describe Article do
     it "should have the title of the first article" do
       a = stub_model(Article, :id => 123, :title => 'first title', :body => 'first body')
       a.stub(:reload)
+      a.stub(:save!)
       b = stub_model(Article, :id => 321, :title => 'second title', :body => 'first body')
       b.stub(:reload)
+      b.stub(:destroy)
       Article.should_receive(:where).and_return([b])
       a.merge_with(321)
       assert_equal 'first title', a.title
@@ -644,8 +646,10 @@ describe Article do
     it "should have the content of both articles" do
       a = stub_model(Article, :id => 123, :title => 'first title', :body => 'first body')
       a.stub(:reload)
+      a.stub(:save!)
       b = stub_model(Article, :id => 321, :title => 'second title', :body => 'second body')
       b.stub(:reload)
+      b.stub(:destroy)
       Article.should_receive(:where).and_return([b])
 
       a.merge_with(321)
@@ -657,11 +661,12 @@ describe Article do
       a_comments.stub(:comments_closed?)
       a = stub_model(Article, :id => 123, :title => 'first title', :body => 'first body', :comments => a_comments)
       a.stub(:reload)
-
+      a.stub(:save!)
       b_comments = [stub_model(Comment, :article_id => 321, :author => 'a', :body => 'aa'), stub_model(Comment, :article_id => 321, :author => 'a', :body => 'aa'), stub_model(Comment, :article_id => 321, :author => 'a', :body => 'aa')]
       b = stub_model(Article, :id => 321, :title => 'second title', :body => 'second body', :comments => a_comments)
       b.should_receive(:destroy)
       b.stub(:reload)
+      b.stub(:destroy)
       Article.should_receive(:where).and_return([b])
 
       a.merge_with(321)
