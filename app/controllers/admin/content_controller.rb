@@ -24,8 +24,12 @@ class Admin::ContentController < Admin::BaseController
   end
 
   def merge
-    params[:merge] = "Merge"
-    new_or_edit
+    if (current_user.profile_id == 1)
+      params[:merge] = "Merge"
+      new_or_edit
+    elsif
+      redirect_to :action => 'index'
+    end
   end
 
   def new
