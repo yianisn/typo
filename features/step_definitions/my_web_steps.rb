@@ -61,3 +61,9 @@ Given /^I merge article "(.*)" with article "(.*)"$/ do |article_title_source, a
   click_button 'Merge'
 
 end
+
+Given /^I create a new category "(.*?)"$/ do |category|
+  fill_in 'category_name', :with => category
+  fill_in 'category_description', :with => category + ' description'
+  click_button 'Save'
+end
